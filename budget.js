@@ -1,7 +1,10 @@
+// budget.js
+
 const STORAGE_KEYS = {
   BUDGET: "monthlyBudgets",
-  EXPENSE: "expenseList"
+  EXPENSE: "expenses"   // FIXED — now matches expense page
 };
+
 
 const $ = s => document.querySelector(s);
 
