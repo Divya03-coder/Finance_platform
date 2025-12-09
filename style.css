@@ -1,8 +1,48 @@
+/* -----------------------------
+   GLOBAL BASE
+------------------------------ */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
 body {
     font-family: "Poppins", sans-serif;
     background: #f5f7fa !important;
     color: #1a2b4c;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
+
+main {
+    flex: 1 0 auto;     /* Push footer to bottom */
+}
+
+/* -----------------------------
+   NAVBAR
+------------------------------ */
+
+.navbar-brand {
+    font-size: 24px;
+    font-weight: 700;
+    color: #f7f9fb !important;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.nav-item .nav-link {
+    color: #f7f9fb !important;
+    font-weight: 500;
+    font-size: large;
+}
+
+.navbar {
+    padding: 14px 20px;
+}
+
+/* -----------------------------
+   CARDS & CONTENT
+------------------------------ */
 
 .card {
     border-radius: 16px !important;
@@ -17,54 +57,15 @@ body {
 }
 
 .card-title {
-    font-weight: 600;
+    font-size: 30px;
+    font-weight: 700;
 }
 
 h2, h3, h5 {
     font-weight: 600;
 }
 
-.navbar {
-    padding: 14px 20px;
-}
-
-.total-income-card,
-.total-expense-card,
-.balance-card,
-.budget-remaining-card {
-    background: #ffffff;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.05) !important;
-}
-
-.card-subtitle {
-    font-size: 14px;
-    color: #6c7a91;
-}
-
-.card-title {
-    font-size: 30px;
-    font-weight: 700;
-}
-
-.weekly-chart {
-    height: 230px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-}
-
-.bar {
-    width: 22px;
-    border-radius: 6px;
-    background: linear-gradient(180deg, #4e73df, #224abe);
-    transition: 0.3s ease;
-}
-
-.bar:hover {
-    opacity: 0.8;
-    transform: scale(1.05);
-}
-
+/* Tables */
 .table th {
     background: #f1f4f8 !important;
     font-size: 14px;
@@ -79,6 +80,7 @@ h2, h3, h5 {
     background: #f8f9fc;
 }
 
+/* Quick Actions */
 .quick-action {
     background: #f8fafc !important;
     border: 1px solid #e3e8ef;
@@ -99,8 +101,62 @@ h2, h3, h5 {
     border-radius: 50%;
 }
 
+/* -----------------------------
+   BAR GRAPH
+------------------------------ */
+.graph-bar:hover {
+    transform: scaleY(1.1);
+    opacity: 0.8;
+    transition: 0.3s ease;
+}
+
+.bar {
+    width: 22px;
+    border-radius: 6px;
+    background: linear-gradient(180deg, #4e73df, #224abe);
+    transition: 0.3s ease;
+}
+
+.bar:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+
+/* -----------------------------
+   EXPENSE CATEGORY PIE (DONUT)
+------------------------------ */
+
+.category-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px !important;     /* bring items closer */
+}
+
+#categoryLegend {
+    margin-left: 10px;
+}
+
+#categoryLegend div {
+    margin-bottom: 6px !important;
+}
+
+#categoryLegend span {
+    font-size: 15px;
+}
+
+.category-chart {
+    width: 55% !important;
+    min-width: 250px;
+    height: 260px;
+}
+
+/* -----------------------------
+   FOOTER (Sticky bottom)
+------------------------------ */
+
 footer {
-    margin-top: 40px;
+    margin-top: auto;
     padding: 18px 40px;
     display: flex;
     justify-content: space-between;
@@ -122,30 +178,8 @@ footer a:hover {
     text-decoration: underline;
 }
 
+/* Responsive Footer */
 @media (max-width: 768px) {
-    .weekly-chart {
-        height: 180px;
-    }
-
-    .bar {
-        width: 18px;
-    }
-    .weekly-chart {
-  height: 200px;
-}
-
-.chart-bar {
-  width: 12%;
-}
-
-.chart-bar .bar {
-  width: 100%;
-  background: #3b82f6;
-  border-radius: 6px;
-  transition: height 0.5s ease;
-}
-
-
     footer {
         flex-direction: column;
         text-align: center;
