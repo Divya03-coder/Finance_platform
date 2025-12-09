@@ -1,7 +1,6 @@
-
-
 const STORAGE_KEY = "expenses";
 let expenses = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+
 
 const tableBody = document.getElementById("expenseTable");
 const statsBox = document.getElementById("stats");
@@ -9,48 +8,44 @@ const form = document.getElementById("expenseForm");
 const deleteModal = new bootstrap.Modal(document.getElementById("deleteModal"));
 let deleteId = null;
 
-
 const saveExpenses = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(expenses));
-
-
 const fmtINR = (v) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(v);
 
-
-const renderTable = (list = expenses) => {
-  tableBody.innerHTML = list.map(({ id, title, category, amount, date }) => `
-    <tr>
-      <td>${title}</td>
-      <td>${category}</td>
-      <td class="fw-bold">${fmtINR(amount)}</td>
-      <td>${new Date(date).toLocaleDateString()}</td>
-      <td>
-        <button class="btn btn-sm btn-primary me-2" onclick="editExpense(${id})">Edit</button>
-        <button class="btn btn-sm btn-danger" onclick="confirmDelete(${id})">Delete</button>
-      </td>
-    </tr>`).join("");
+function renderTable(list = expenses, highlightFn = null) {
+  tableBody.innerHTML = list.map(({ id, title, category, amount, date }) => {
+    const highlightClass = highlightFn && highlightFn({ id, title, category, amount, date }) ? "highlight" : "";
+    return `
+      <tr class="${highlightClass}">
+        <td>${title}</td>
+        <td>${category}</td>
+        <td class="fw-bold">${fmtINR(amount)}</td>
+        <td>${new Date(date).toLocaleString("en-IN")}</td>
+        <td>
+          <button class="btn btn-sm btn-primary me-2" onclick="editExpense(${id})">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="confirmDelete(${id})">Delete</button>
+        </td>
+      </tr>`;
+  }).join("");
   updateStats(list);
-};
+}
 
 // Stats
-const updateStats = (list) => {
+function updateStats(list) {
   if (!list.length) return statsBox.innerHTML = "";
   const total = list.reduce((a, b) => a + Number(b.amount), 0);
   const avg = total / list.length;
   const max = list.reduce((a, b) => a.amount > b.amount ? a : b);
 
   statsBox.innerHTML = `
-    <div class="col-md-4">
-      <div class="card p-3 bg-success text-white">Total: ${fmtINR(total)}</div>
-    </div>
-    <div class="col-md-4">
-      <div class="card p-3 bg-warning">Average: ${fmtINR(avg)}</div>
-    </div>
-    <div class="col-md-4">
-      <div class="card p-3 bg-info text-dark">Highest: ${fmtINR(max.amount)}</div>
-    </div>`;
-};
+    <div class="col-md-4"><div class="card p-3 bg-success text-white">Total: ${fmtINR(total)}</div></div>
+    <div class="col-md-4"><div class="card p-3 bg-warning">Average: ${fmtINR(avg.toFixed(0))}</div></div>
+    <div class="col-md-4"><div class="card p-3 bg-info text-dark">Highest: ${fmtINR(max.amount)}</div></div>`;
+}
+function updateLastSynced() {
+  lastUpdated.textContent = "Last updated: " + new Date().toLocaleString();
+}
 
-
+// Form submit
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   const expense = {
@@ -65,11 +60,11 @@ form.addEventListener("submit", (e) => {
   if (index >= 0) expenses[index] = expense; else expenses.push({ ...expense });
 
   saveExpenses();
-  renderTable();
+  renderTable(expenses);
   form.reset();
 });
 
-
+// Edit
 window.editExpense = (id) => {
   const { title, category, amount, date } = expenses.find((e) => e.id == id);
   document.getElementById("expenseId").value = id;
@@ -88,11 +83,11 @@ window.confirmDelete = (id) => {
 window.deleteExpense = () => {
   expenses = expenses.filter((e) => e.id != deleteId);
   saveExpenses();
-  renderTable();
+  renderTable(expenses);
   deleteModal.hide();
 };
 
-
+// Sorting
 const sortSelect = document.getElementById("sortFilter");
 sortSelect.addEventListener("change", () => {
   let sorted = [...expenses];
@@ -104,29 +99,29 @@ sortSelect.addEventListener("change", () => {
   renderTable(sorted);
 });
 
-
+// Filters (highlight only)
 const filterButtons = document.querySelectorAll("[data-filter]");
-
 const dateCheck = {
   today: (d) => new Date(d).toDateString() === new Date().toDateString(),
   week: (d) => {
     const diff = (new Date() - new Date(d)) / (1000 * 60 * 60 * 24);
-    return diff <= 7;
+    return diff >= 0 && diff <= 7;
   },
   month: (d) => new Date(d).getMonth() === new Date().getMonth()
 };
 
 filterButtons.forEach(btn => btn.addEventListener("click", () => {
   const filterType = btn.dataset.filter;
-  renderTable(expenses.filter(e => dateCheck[filterType](e.date)));
+  renderTable(expenses, (e) => dateCheck[filterType](e.date));
 }));
 
-
+// Category filter (highlight only)
 const categoryFilter = document.getElementById("categoryFilter");
 categoryFilter.addEventListener("change", () => {
-  if (categoryFilter.value === "all") return renderTable();
-  renderTable(expenses.filter((e) => e.category === categoryFilter.value));
+  if (categoryFilter.value === "all") return renderTable(expenses);
+  renderTable(expenses, (e) => e.category === categoryFilter.value);
 });
 
-
-renderTable();
+// Initial render
+renderTable(expenses);
+updateLastSynced();
